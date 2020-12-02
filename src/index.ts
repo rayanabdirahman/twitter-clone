@@ -1,9 +1,15 @@
+require('dotenv').config()
+
 import bootstrapApp from './app'
+import connectToDbClient from './database/db_client'
 import logger from './utilities/logger'
 
 const runApp = async () => {
   try {
     const PORT = process.env.PORT || 3000
+
+    // connect to database
+    await connectToDbClient()
 
     const app = await bootstrapApp()
   

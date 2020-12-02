@@ -1,4 +1,8 @@
 import express from 'express'
+
+import { RegistrableController } from './api/registrable.controller'
+import container from './inversify.config'
+import TYPES from './types'
 import logger from './utilities/logger'
 
 export default async (): Promise<express.Application> => (
@@ -9,6 +13,10 @@ export default async (): Promise<express.Application> => (
       // set middleware
       app.use(express.json())
       app.use(express.urlencoded({ extended: false }))
+
+      // register api routes
+      const controllers: RegistrableController[] = container.getAll<RegistrableController>(TYPES.Controller)
+      controllers.forEach(controller => controller.registerRoutes(app))
 
       // test api route
       app.get('/api/', async (req: express.Request, res: express.Response): Promise<express.Response> => {
