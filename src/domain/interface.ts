@@ -7,8 +7,7 @@ export interface SignUpModel {
   password: string
 }
 
-export interface LoginModel {
-  username: string
+export interface SignInModel {
   email: string
   password: string
 }

@@ -25,9 +25,9 @@ export class UserRepositoryImpl implements UserRepository {
    * Find user by email
    * @param { string } email - stores user email
    */
-  async findByEmail(email: string ): Promise<UserDocument | null> {
+  async findByEmail(email: string, safeguard: boolean = true): Promise<UserDocument | null> {
     // check if password should be returned with user document
-    return await User.findOne({ email }).select('-password -__v')
+    return safeguard ? await User.findOne({ email }).select('-password -__v') : await User.findOne({ email })
   }
 
   /**

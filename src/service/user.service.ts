@@ -1,14 +1,15 @@
 import { injectable, inject } from 'inversify'
-import { UserDocument } from '../database/model/user.model'
 
 import { UserRepository } from '../database/repository/user.repository'
-import { SignUpModel } from '../domain/interface'
+import { SignInModel, SignUpModel } from '../domain/interface'
 import TYPES from '../types'
+import BycryptHelper from '../utilities/bcrypt-helper'
 import JwtHelper from '../utilities/jwt-helper'
 import logger from '../utilities/logger'
 
 export interface UserService {
   signUp(model: SignUpModel): Promise<string>
+  signIn(model: SignInModel): Promise<string>
 }
 
 @injectable()
@@ -59,6 +60,33 @@ export class UserServiceImpl implements UserService {
 
     } catch(error) {
       logger.error(`[UserService: signUp]: Unabled to create new user: ${error}`)
+      throw error
+    }
+  }
+
+  /**
+   * Find user using sign in details
+   * @param { SignInModel } model - stores information needed to sign user in
+   */
+  async signIn(model: SignInModel): Promise<string> { 
+    try {
+      // find user by email address
+      const user = await this.userRepository.findByEmail(model.email, false)
+      if (!user) {
+        throw new Error('Invalid credentials')
+      }
+
+      // check if passwords match
+      const doPasswordsMatch = await BycryptHelper.comparePassword(model.password, user.password)
+      if (!doPasswordsMatch) {
+        throw new Error('Invalid credentials')
+      }
+
+      // sign JWT token
+      return await JwtHelper.sign(user)
+
+    } catch(error) {
+      logger.error(`[UserService: signIn]: Unabled to sign in user: ${error}`)
       throw error
     }
   }
