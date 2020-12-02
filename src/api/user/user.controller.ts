@@ -9,6 +9,7 @@ import ApiResponse from '../../utilities/api-response'
 import { UserService } from '../../service/user.service'
 import logger from '../../utilities/logger'
 import AuthGuard from '../../middleware/auth-guard'
+import { ResponseHeaderEnum } from '../../domain/enum'
 
 @injectable()
 export default class UserController implements RegistrableController {
@@ -21,7 +22,7 @@ export default class UserController implements RegistrableController {
   registerRoutes(app: express.Application): void {
     app.post('/api/user/signup', this.signUp)
     app.post('/api/user/signin', this.signIn)
-    app.post('/api/user/signout', (req: express.Request, res: express.Response) => res.send("Signout"))
+    app.post('/api/user/signout', this.signOut)
     app.get('/api/user/authorise', AuthGuard, this.authorise)
   }
 
@@ -41,6 +42,9 @@ export default class UserController implements RegistrableController {
       }
 
       const token = await this.userService.signUp(model)
+
+      // store token in authorisation header
+      res.header(ResponseHeaderEnum.AUTHORIZATION, `Bearer ${token}`)
 
       return ApiResponse.success(res,  { token })
 
@@ -67,12 +71,29 @@ export default class UserController implements RegistrableController {
       // generate JWT token
       const token = await this.userService.signIn(model)
 
+      // store token in authorisation header
+      res.header(ResponseHeaderEnum.AUTHORIZATION, `Bearer ${token}`)
+
       return ApiResponse.success(res,  { token })
 
     } catch (error) {
       const { message } = error
       logger.error(`[UserController: signIn] - Unable to sign in user: ${message}`)
       return ApiResponse.error(res, message)
+    }
+  }
+
+  signOut = async (req: express.Request, res: express.Response): Promise<express.Response> => {
+    try {
+      // remove authorisation header
+      delete req.headers[ResponseHeaderEnum.AUTHORIZATION]
+
+      return ApiResponse.success(res, 'Successfully signed user out')
+
+    } catch (error) {
+      const { message } = error;
+      logger.error(`[UserController: signOut] - Unable to sign out user: ${message}`);
+      return ApiResponse.error(res, message);
     }
   }
 
