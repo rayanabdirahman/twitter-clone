@@ -7,6 +7,7 @@ import logger from '../utilities/logger'
 
 export interface PostService {
   createOne(model: PostModel): Promise<PostDocument>
+  findAll(): Promise<PostDocument[] | null>
 }
 
 @injectable()
@@ -17,10 +18,6 @@ export class PostServiceImpl implements PostService {
     this.postRepository = postRepository
   }
 
-  /**
-   * Create a single post
-   * @param { PostModel } model - stores information needed to created a new post
-   */
   async createOne(model: PostModel): Promise<PostDocument> {
     try {
 
@@ -28,6 +25,15 @@ export class PostServiceImpl implements PostService {
 
     } catch(error) {
       logger.error(`[PostService: createOne]: Unabled to create new post: ${error}`)
+      throw error
+    }
+  }
+
+  async findAll(): Promise<PostDocument[] | null> { 
+    try {
+      return await this.postRepository.findAll()
+    } catch(error) {
+      logger.error(`[PostService: findAll]: Unable to find posts: ${error}`)
       throw error
     }
   }

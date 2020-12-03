@@ -19,9 +19,7 @@ export default class PostController implements RegistrableController {
 
   registerRoutes(app: express.Application): void {
     app.post('/api/post', AuthGuard, this.createOne)
-    app.post('/api/post/signin')
-    app.post('/api/post/signout')
-    app.get('/api/post/authorise')
+    app.get('/api/post/list', this.findAll)
   }
 
   createOne = async (req: express.Request, res: express.Response): Promise<express.Response> => {
@@ -46,6 +44,17 @@ export default class PostController implements RegistrableController {
     } catch (error) {
       const { message } = error
       logger.error(`[PostController: createOne] - Unable to create post: ${message}`)
+      return ApiResponse.error(res, message)
+    }
+  }
+
+  findAll = async (req: express.Request, res: express.Response): Promise<express.Response> => {
+    try {
+      const posts = await this.postService.findAll()
+      return ApiResponse.success(res,  { posts })
+    } catch (error) {
+      const { message } = error
+      logger.error(`[PostController: findAll] - Unable to find posts: ${message}`)
       return ApiResponse.error(res, message)
     }
   }
