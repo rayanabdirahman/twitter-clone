@@ -24,3 +24,8 @@ export interface UserModel {
 export interface JwtPayload {
   user: UserModel
 }
+
+export interface PostModel {
+  content: string
+  postedBy: string
+}
