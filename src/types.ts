@@ -4,6 +4,7 @@ const TYPES = {
   UserRepository: Symbol('UserRepository'),
   PostService: Symbol('PostService'),
   PostRepository: Symbol('PostRepository'),
+  ProfileService: Symbol('ProfileService'),
 }
 
 export default TYPES

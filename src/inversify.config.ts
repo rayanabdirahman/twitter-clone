@@ -8,16 +8,20 @@ import { UserRepository, UserRepositoryImpl } from './database/repository/user.r
 import PostController from './api/post/post.controller'
 import { PostRepository, PostRepositoryImpl } from './database/repository/post.repository'
 import { PostService, PostServiceImpl } from './service/post.service'
+import ProfileController from './api/profile/profile.controller'
+import { ProfileServiceImpl, ProfileService } from './service/profile.service'
 
 const container = new Container()
 
 // controllers
 container.bind<RegistrableController>(TYPES.Controller).to(UserController)
 container.bind<RegistrableController>(TYPES.Controller).to(PostController)
+container.bind<RegistrableController>(TYPES.Controller).to(ProfileController)
 
 // services
 container.bind<UserService>(TYPES.UserService).to(UserServiceImpl)
 container.bind<PostService>(TYPES.PostService).to(PostServiceImpl)
+container.bind<ProfileService>(TYPES.ProfileService).to(ProfileServiceImpl)
 
 // repository
 container.bind<UserRepository>(TYPES.UserRepository).to(UserRepositoryImpl)
