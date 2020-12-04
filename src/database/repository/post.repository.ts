@@ -4,7 +4,7 @@ import Post, { PostDocument } from '../model/post.model'
 
 export interface PostRepository {
   createOne(model: PostModel): Promise<PostDocument>
-  findAll(): Promise<PostDocument[] | null>
+  findAll(query: { [key: string]: string }): Promise<PostDocument[] | null>
   findByIdAndUpdate(_id: string | object, key: string, value: string | object, option?: string): Promise<PostDocument | null>
 }
 
@@ -15,8 +15,9 @@ export class PostRepositoryImpl implements PostRepository {
     return await post.save()
   }
 
-  async findAll(): Promise<PostDocument[] | null> {
-    return await Post.find({}).populate('postedBy', ['-password']).sort({ 'createdAt': -1 })
+  async findAll(query: { [key: string]: string }): Promise<PostDocument[] | null> {
+    // return all posts or filter by postedBy
+    return await Post.find(query).populate('postedBy', ['-password']).sort({ 'createdAt': -1 })
   }
 
   async findByIdAndUpdate(_id: string | object, key: string, value: string | object, option?: string): Promise<PostDocument | null> {

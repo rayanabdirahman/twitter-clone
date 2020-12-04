@@ -75,7 +75,11 @@ export default class PostController implements RegistrableController {
 
   findAll = async (req: express.Request, res: express.Response): Promise<express.Response> => {
     try {
-      const posts = await this.postService.findAll()
+      // get query params to filter posts
+      const query = req.query
+
+      const posts = await this.postService.findAll(query as { [key: string]: string })
+
       return ApiResponse.success(res,  { posts })
     } catch (error) {
       const { message } = error

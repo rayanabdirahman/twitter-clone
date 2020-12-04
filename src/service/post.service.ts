@@ -8,7 +8,7 @@ import { UserRepository } from '../database/repository/user.repository'
 
 export interface PostService {
   createOne(model: PostModel): Promise<PostDocument>
-  findAll(): Promise<PostDocument[] | null>
+  findAll(query: { [key: string]: string }): Promise<PostDocument[] | null>
   likeOne(model: PostLikeModel): Promise<void>
 }
 
@@ -45,9 +45,12 @@ export class PostServiceImpl implements PostService {
     }
   }
 
-  async findAll(): Promise<PostDocument[] | null> { 
+  async findAll(query: { [key: string]: string }): Promise<PostDocument[] | null> { 
     try {
-      return await this.postRepository.findAll()
+      // return all posts or filter by postedBy
+      const posts = await this.postRepository.findAll(query)
+      console.log('POSRS: ', posts)
+      return posts
     } catch(error) {
       logger.error(`[PostService: findAll]: Unable to find posts: ${error}`)
       throw error
