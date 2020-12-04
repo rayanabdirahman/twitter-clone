@@ -1,7 +1,7 @@
 import express from 'express'
 import { injectable, inject } from 'inversify'
 import { RegistrableController } from '../registrable.controller'
-import { PostModel } from '../../domain/interface'
+import { PostLikeModel, PostModel } from '../../domain/interface'
 import PostValidator from './post.validator'
 import ApiResponse from '../../utilities/api-response'
 import logger from '../../utilities/logger'
@@ -19,6 +19,7 @@ export default class PostController implements RegistrableController {
 
   registerRoutes(app: express.Application): void {
     app.post('/api/post', AuthGuard, this.createOne)
+    app.put('/api/post/:_id/like', AuthGuard, this.likeOne)
     app.get('/api/post/list', this.findAll)
   }
 
@@ -44,6 +45,30 @@ export default class PostController implements RegistrableController {
     } catch (error) {
       const { message } = error
       logger.error(`[PostController: createOne] - Unable to create post: ${message}`)
+      return ApiResponse.error(res, message)
+    }
+  }
+
+  likeOne = async (req: express.Request, res: express.Response): Promise<express.Response> => {
+    try {
+      const model: PostLikeModel = {
+        _id: req.params._id,
+        user: req.user!
+      }
+
+      // validate request body
+      const validity = PostValidator.likeOne(model)
+      if (validity.error) {
+        const { message } = validity.error
+        return ApiResponse.error(res, message)
+      }
+
+      const post = await this.postService.likeOne(model)
+
+      return ApiResponse.success(res,  { post })
+    } catch (error) {
+      const { message } = error
+      logger.error(`[PostController: likeOne] - Failed to like post: ${message}`)
       return ApiResponse.error(res, message)
     }
   }

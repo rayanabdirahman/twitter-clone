@@ -19,6 +19,7 @@ export interface UserModel {
   username: string
   email: string
   avatar: string
+  likes?: string[]
 }
 
 export interface JwtPayload {
@@ -28,4 +29,10 @@ export interface JwtPayload {
 export interface PostModel {
   content: string
   postedBy: string
+  likes?: string[]
+}
+
+export interface PostLikeModel {
+  _id: string | object,
+  user: UserModel
 }

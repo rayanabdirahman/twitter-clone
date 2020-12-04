@@ -1,6 +1,5 @@
 import express from 'express'
 import { injectable, inject } from 'inversify'
-
 import { RegistrableController } from '../registrable.controller'
 import TYPES from '../../types'
 import { SignInModel, SignUpModel, UserModel } from '../../domain/interface'

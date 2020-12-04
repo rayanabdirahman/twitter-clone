@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose, { Schema } from 'mongoose'
 
 import BycryptHelper from '../../utilities/bcrypt-helper'
 
@@ -9,6 +9,7 @@ export interface UserDocument extends mongoose.Document {
   username: string
   email: string
   avatar: string
+  likes: mongoose.Types.ObjectId[]
   password: string
 }
 
@@ -17,8 +18,9 @@ const UserSchema: mongoose.Schema = new mongoose.Schema({
   lastName: { type: String, required: true, trim: true },
   username: { type: String, required: true, trim: true, unique: true },
   email: { type: String, required: true, trim: true, unique: true},
-  password: { type: String, required: true },
-  avatar: { type: String }
+  avatar: { type: String },
+  likes: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
+  password: { type: String, required: true }
 }, { timestamps: true })
 
 // Encrypt user password before saving
