@@ -8,6 +8,7 @@ import { UserRepository } from '../database/repository/user.repository'
 
 export interface PostService {
   createOne(model: PostModel): Promise<PostDocument>
+  findOne(_id: string): Promise<PostDocument | null>
   findAll(query: { [key: string]: string }): Promise<PostDocument[] | null>
   likeOne(model: PostLikeModel): Promise<void>
 }
@@ -41,6 +42,16 @@ export class PostServiceImpl implements PostService {
 
     } catch(error) {
       logger.error(`[PostService: createOne]: Unabled to create new post: ${error}`)
+      throw error
+    }
+  }
+
+  async findOne(_id: string): Promise<PostDocument | null> {
+    try {
+      const post = await this.postRepository.findById(_id)
+      return post
+    } catch(error) {
+      logger.error(`[PostService: findOne]: Unable to find post: ${error}`)
       throw error
     }
   }

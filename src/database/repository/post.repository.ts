@@ -4,6 +4,7 @@ import Post, { PostDocument } from '../model/post.model'
 
 export interface PostRepository {
   createOne(model: PostModel): Promise<PostDocument>
+  findById(_id: string): Promise<PostDocument | null>
   findAll(query: { [key: string]: string }): Promise<PostDocument[] | null>
   findByIdAndUpdate(_id: string | object, key: string, value: string | object, option?: string): Promise<PostDocument | null>
 }
@@ -13,6 +14,10 @@ export class PostRepositoryImpl implements PostRepository {
   async createOne(model: PostModel): Promise<PostDocument> {
     const post = new Post(model)
     return await post.save()
+  }
+
+  async findById(_id: string): Promise<PostDocument | null> {
+    return await Post.findOne({ _id }).select('-__v')
   }
 
   async findAll(query: { [key: string]: string }): Promise<PostDocument[] | null> {

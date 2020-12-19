@@ -21,6 +21,7 @@ export default class PostController implements RegistrableController {
     app.post('/api/post', AuthGuard, this.createOne)
     app.put('/api/post/:_id/like', AuthGuard, this.likeOne)
     app.get('/api/post/list', this.findAll)
+    app.get('/api/post/:_id', this.findOne)
   }
 
   createOne = async (req: express.Request, res: express.Response): Promise<express.Response> => {
@@ -84,6 +85,18 @@ export default class PostController implements RegistrableController {
     } catch (error) {
       const { message } = error
       logger.error(`[PostController: findAll] - Unable to find posts: ${message}`)
+      return ApiResponse.error(res, message)
+    }
+  }
+
+  findOne = async (req: express.Request, res: express.Response): Promise<express.Response> => {
+    try {
+      const { _id } = req.params
+      const post = await this.postService.findOne(_id)
+      return ApiResponse.success(res,  { post })
+    } catch (error) {
+      const { message } = error
+      logger.error(`[PostController: findOne] - Unable to find post: ${message}`)
       return ApiResponse.error(res, message)
     }
   }
